@@ -1,3 +1,5 @@
+// Copyright (c) 2011 Ross Light.
+
 package ftp
 
 import (
@@ -11,12 +13,14 @@ import (
 	"net/textproto"
 )
 
+// A Client is an FTP client.
 type Client struct {
 	c       net.Conn
 	proto   *textproto.Conn
 	Welcome Reply
 }
 
+// Dial connects to an FTP server.
 func Dial(network, addr string) (*Client, os.Error) {
 	c, err := net.Dial(network, addr)
 	if err != nil {
@@ -25,6 +29,7 @@ func Dial(network, addr string) (*Client, os.Error) {
 	return NewClient(c)
 }
 
+// NewClient creates an FTP client from an existing connection.
 func NewClient(c net.Conn) (*Client, os.Error) {
 	var err os.Error
 	client := &Client{

@@ -1,3 +1,5 @@
+// Copyright (c) 2011 Ross Light.
+
 package ftp
 
 import (
