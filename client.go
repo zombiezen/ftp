@@ -63,10 +63,13 @@ func (client *Client) Login(username, password string) os.Error {
 	if err != nil {
 		return err
 	}
-	if reply.Code >= 300 && reply.Code < 400 {
+	if reply.Code == CodeNeedPassword {
 		reply, err = client.Do("PASS " + password)
+		if err != nil {
+			return err
+		}
 	}
-	if !reply.Positive() {
+	if !reply.PositiveComplete() {
 		return reply
 	}
 	return nil
@@ -86,7 +89,7 @@ func (client *Client) response() (Reply, os.Error) {
 		return Reply{}, err
 	}
 
-	reply := Reply{Code: code}
+	reply := Reply{Code: Code(code)}
 	switch line[3] {
 	case '-':
 		lines := []string{line[4:]}
@@ -113,8 +116,8 @@ func (client *Client) response() (Reply, os.Error) {
 	return reply, nil
 }
 
-// Do sends a command over the control connection and waits for the response.
-// It returns any protocol error encountered while performing the command.
+// Do sends a command over the control connection and waits for the response.  It returns any
+// protocol error encountered while performing the command.
 func (client *Client) Do(command string) (Reply, os.Error) {
 	err := client.proto.PrintfLine("%s", command)
 	if err != nil {
@@ -123,13 +126,13 @@ func (client *Client) Do(command string) (Reply, os.Error) {
 	return client.response()
 }
 
-// Data opens a new passive data port.
-func (client *Client) Data() (io.ReadCloser, os.Error) {
+// Passive opens a new passive data port.
+func (client *Client) Passive() (io.ReadWriteCloser, os.Error) {
 	// TODO(ross): EPSV for IPv6
 	reply, err := client.Do("PASV")
 	if err != nil {
 		return nil, err
-	} else if reply.Code != 227 {
+	} else if reply.Code != CodePassive {
 		return nil, reply
 	}
 
@@ -156,4 +159,45 @@ func parsePasvReply(msg string) (*net.TCPAddr, os.Error) {
 		IP:   net.IP{byte(numbers[1]), byte(numbers[2]), byte(numbers[3]), byte(numbers[4])},
 		Port: numbers[5]<<8 | numbers[6],
 	}, nil
+}
+
+// transfer sends a command and opens a new passive data connection.
+func (client *Client) transfer(command, dataType string) (io.ReadWriteCloser, os.Error) {
+	// Set type
+	reply, err := client.Do("TYPE " + dataType)
+	switch {
+	case err != nil:
+		return nil, err
+	case !reply.PositiveComplete():
+		return nil, reply
+	}
+
+	// Open data connection
+	conn, err := client.Passive()
+	if err != nil {
+		return nil, err
+	}
+
+	// Send command
+	reply, err = client.Do(command)
+	switch {
+	case err != nil:
+		conn.Close()
+		return nil, err
+	case !reply.PositiveComplete():
+		conn.Close()
+		return nil, reply
+	}
+
+	return conn, nil
+}
+
+// Text sends a command and opens a new passive data connection in ASCII mode.
+func (client *Client) Text(command string) (io.ReadWriteCloser, os.Error) {
+	return client.transfer(command, "A")
+}
+
+// Binary sends a command and opens a new passive data connection in image mode.
+func (client *Client) Binary(command string) (io.ReadWriteCloser, os.Error) {
+	return client.transfer(command, "I")
 }
