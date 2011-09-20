@@ -151,13 +151,14 @@ func parsePasvReply(msg string) (*net.TCPAddr, os.Error) {
 	if numberStrings == nil {
 		return nil, os.NewError("PASV reply provided no port")
 	}
-	numbers := make([]int, len(numberStrings))
+	numbers := make([]byte, len(numberStrings))
 	for i, s := range numberStrings {
-		numbers[i], _ = strconv.Atoi(s)
+		n, _ := strconv.Atoi(s)
+		numbers[i] = byte(n)
 	}
 	return &net.TCPAddr{
-		IP:   net.IP{byte(numbers[1]), byte(numbers[2]), byte(numbers[3]), byte(numbers[4])},
-		Port: numbers[5]<<8 | numbers[6],
+		IP:   net.IP(numbers[1:5]),
+		Port: int(numbers[5])<<8 | int(numbers[6]),
 	}, nil
 }
 
