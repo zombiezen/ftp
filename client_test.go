@@ -105,3 +105,14 @@ func TestParsePasvReply(t *testing.T) {
 		t.Errorf("addr.Port = %v (expected %v)", addr.Port, expectedPort)
 	}
 }
+
+func TestEpsvReply(t *testing.T) {
+	const expectedPort = 1031
+	port, err := parseEpsvReply("229 Entering Extended Passive Mode. (|||1031|)")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if port != expectedPort {
+		t.Errorf("port = %v (expected %v)", port, expectedPort)
+	}
+}

@@ -128,20 +128,43 @@ func (client *Client) Do(command string) (Reply, os.Error) {
 
 // Passive opens a new passive data port.
 func (client *Client) Passive() (io.ReadWriteCloser, os.Error) {
-	// TODO(ross): EPSV for IPv6
-	reply, err := client.Do("PASV")
-	if err != nil {
-		return nil, err
-	} else if reply.Code != CodePassive {
-		return nil, reply
+	var reply Reply
+	var addr *net.TCPAddr
+	var err os.Error
+
+	switch client.c.RemoteAddr().Network() {
+	case "tcp6":
+		reply, err = client.Do("EPSV")
+		if err != nil {
+			return nil, err
+		} else if reply.Code != CodeExtendedPassive {
+			return nil, reply
+		}
+
+		port, err := parseEpsvReply(reply.Msg)
+		if err != nil {
+			return nil, err
+		}
+
+		addr = &net.TCPAddr{
+			IP:   client.c.RemoteAddr().(*net.TCPAddr).IP,
+			Port: port,
+		}
+	default:
+		reply, err = client.Do("PASV")
+		if err != nil {
+			return nil, err
+		} else if reply.Code != CodePassive {
+			return nil, reply
+		}
+
+		addr, err = parsePasvReply(reply.Msg)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	addr, err := parsePasvReply(reply.Msg)
-	if err != nil {
-		return nil, err
-	}
-
-	return net.DialTCP("tcp4", nil, addr)
+	return net.DialTCP("tcp", nil, addr)
 }
 
 var pasvRegexp = regexp.MustCompile(`([0-9]+),([0-9]+),([0-9]+),([0-9]+),([0-9]+),([0-9]+)`)
@@ -160,6 +183,26 @@ func parsePasvReply(msg string) (*net.TCPAddr, os.Error) {
 		IP:   net.IP(numbers[1:5]),
 		Port: int(numbers[5])<<8 | int(numbers[6]),
 	}, nil
+}
+
+const (
+	epsvStart = "(|||"
+	epsvEnd   = "|)"
+)
+
+func parseEpsvReply(msg string) (port int, err os.Error) {
+	start := strings.LastIndex(msg, epsvStart)
+	if start == -1 {
+		return 0, os.NewError("EPSV reply provided no port")
+	}
+	start += len(epsvStart)
+
+	end := strings.LastIndex(msg, epsvEnd)
+	if end == -1 || end <= start {
+		return 0, os.NewError("EPSV reply provided no port")
+	}
+
+	return strconv.Atoi(msg[start:end])
 }
 
 // transfer sends a command and opens a new passive data connection.

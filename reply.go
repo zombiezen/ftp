@@ -29,6 +29,7 @@ const (
 	CodeNoTransfer      = 225
 	CodeClosingData     = 226
 	CodePassive         = 227
+	CodeExtendedPassive = 229
 	CodeLoggedIn        = 230
 	CodeActionOkay      = 250
 	CodeCreated         = 257
