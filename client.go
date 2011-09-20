@@ -228,7 +228,7 @@ func (client *Client) transfer(command, dataType string) (io.ReadWriteCloser, os
 	case err != nil:
 		conn.Close()
 		return nil, err
-	case !reply.PositiveComplete():
+	case !reply.Positive():
 		conn.Close()
 		return nil, reply
 	}
