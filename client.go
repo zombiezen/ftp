@@ -148,7 +148,7 @@ func parsePasvReply(msg string) (*net.TCPAddr, os.Error) {
 		numbers[i], _ = strconv.Atoi(s)
 	}
 	return &net.TCPAddr{
-		IP:   net.IP{byte(numbers[0]), byte(numbers[1]), byte(numbers[2]), byte(numbers[3])},
-		Port: numbers[4]<<8 | numbers[5],
+		IP:   net.IP{byte(numbers[1]), byte(numbers[2]), byte(numbers[3]), byte(numbers[4])},
+		Port: numbers[5]<<8 | numbers[6],
 	}, nil
 }
