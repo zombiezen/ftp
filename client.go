@@ -5,12 +5,11 @@ package ftp
 import (
 	"errors"
 	"io"
+	"net"
+	"net/textproto"
 	"regexp"
 	"strconv"
 	"strings"
-
-	"net"
-	"net/textproto"
 )
 
 // A Client is an FTP client.
