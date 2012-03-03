@@ -13,49 +13,49 @@ type Code int
 // FTP reply codes defined in RFC 959.
 const (
 	CodeRestartMarker    Code = 110
-	CodeServiceReadySoon      = 120
-	CodeStartingTransfer      = 125
-	CodeFileStatusOkay        = 150
+	CodeServiceReadySoon Code = 120
+	CodeStartingTransfer Code = 125
+	CodeFileStatusOkay   Code = 150
 
-	CodeOkay            = 200
-	CodeSuperfluous     = 202
-	CodeSystemStatus    = 211
-	CodeDirectoryStatus = 212
-	CodeFileStatus      = 213
-	CodeHelpMessage     = 214
-	CodeSystemType      = 215
-	CodeServiceReady    = 220
-	CodeServiceClosing  = 221
-	CodeNoTransfer      = 225
-	CodeClosingData     = 226
-	CodePassive         = 227
-	CodeExtendedPassive = 229
-	CodeLoggedIn        = 230
-	CodeActionOkay      = 250
-	CodeCreated         = 257
+	CodeOkay            Code = 200
+	CodeSuperfluous     Code = 202
+	CodeSystemStatus    Code = 211
+	CodeDirectoryStatus Code = 212
+	CodeFileStatus      Code = 213
+	CodeHelpMessage     Code = 214
+	CodeSystemType      Code = 215
+	CodeServiceReady    Code = 220
+	CodeServiceClosing  Code = 221
+	CodeNoTransfer      Code = 225
+	CodeClosingData     Code = 226
+	CodePassive         Code = 227
+	CodeExtendedPassive Code = 229
+	CodeLoggedIn        Code = 230
+	CodeActionOkay      Code = 250
+	CodeCreated         Code = 257
 
-	CodeNeedPassword       = 331
-	CodeNeedAccount        = 332
-	CodePendingInformation = 350
+	CodeNeedPassword       Code = 331
+	CodeNeedAccount        Code = 332
+	CodePendingInformation Code = 350
 
-	CodeServiceNotAvailable = 421
-	CodeCantOpenData        = 425
-	CodeTransferAborted     = 426
-	CodeActionNotTaken      = 450
-	CodeLocalError          = 451
-	CodeInsufficientStorage = 452
+	CodeServiceNotAvailable Code = 421
+	CodeCantOpenData        Code = 425
+	CodeTransferAborted     Code = 426
+	CodeActionNotTaken      Code = 450
+	CodeLocalError          Code = 451
+	CodeInsufficientStorage Code = 452
 
-	CodeUnrecognizedCommand     = 500
-	CodeParameterSyntaxError    = 501
-	CodeNotImplemented          = 502
-	CodeBadSequence             = 503
-	CodeParameterNotImplemented = 504
-	CodeNotLoggedIn             = 530
-	CodeNoAccount               = 532
-	CodeFileUnavailable         = 550
-	CodePageTypeUnknown         = 551
-	CodeExceededQuota           = 552
-	CodeFileNameNotAllowed      = 553
+	CodeUnrecognizedCommand     Code = 500
+	CodeParameterSyntaxError    Code = 501
+	CodeNotImplemented          Code = 502
+	CodeBadSequence             Code = 503
+	CodeParameterNotImplemented Code = 504
+	CodeNotLoggedIn             Code = 530
+	CodeNoAccount               Code = 532
+	CodeFileUnavailable         Code = 550
+	CodePageTypeUnknown         Code = 551
+	CodeExceededQuota           Code = 552
+	CodeFileNameNotAllowed      Code = 553
 )
 
 // Preliminary returns whether the code indicates a preliminary positive reply.
