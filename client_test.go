@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"net"
 	"net/textproto"
-	"os"
 	"reflect"
 	"testing"
 )
@@ -15,15 +14,15 @@ type MockRWC struct {
 	R, W *bytes.Buffer
 }
 
-func (conn MockRWC) Read(p []byte) (n int, err os.Error) {
+func (conn MockRWC) Read(p []byte) (n int, err error) {
 	return conn.R.Read(p)
 }
 
-func (conn MockRWC) Write(p []byte) (n int, err os.Error) {
+func (conn MockRWC) Write(p []byte) (n int, err error) {
 	return conn.W.Write(p)
 }
 
-func (conn MockRWC) Close() os.Error {
+func (conn MockRWC) Close() error {
 	return nil
 }
 

@@ -105,3 +105,7 @@ func (r Reply) String() string {
 	}
 	return r.Code.String() + " " + r.Msg
 }
+
+func (r Reply) Error() string {
+	return r.String()
+}
